@@ -1,28 +1,33 @@
-import Link from 'next/link';
+# Testing and validation
 
-export default function LoginPage() {
-  return (
-    <div className="container py-12">
-      <div className="mx-auto max-w-md card p-8">
-        <p className="text-sm font-bold uppercase tracking-[0.18em] text-brand-600">Welcome back</p>
-        <h1 className="mt-3 text-3xl font-black text-slate-900">Log in</h1>
-        <form className="mt-6 space-y-5">
-          <label className="block">
-            <span className="mb-2 block text-sm font-medium text-slate-700">Email</span>
-            <input type="email" defaultValue="customer@example.com" className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 outline-none focus:border-brand-500" />
-          </label>
-          <label className="block">
-            <span className="mb-2 block text-sm font-medium text-slate-700">Password</span>
-            <input type="password" defaultValue="password123" className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 outline-none focus:border-brand-500" />
-          </label>
-          <button type="submit" className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-brand-600 font-semibold text-white">
-            Log in
-          </button>
-        </form>
-        <p className="mt-5 text-center text-sm text-slate-600">
-          New here? <Link href="/register" className="font-semibold text-brand-600">Create an account</Link>
-        </p>
-      </div>
-    </div>
-  );
-}
+This project ships with a lightweight Vitest suite focused on pricing and validation logic.
+
+## Run the suite
+
+```bash
+npm test
+```
+
+## Coverage included
+
+- pricing engine correctness for BW and colour jobs
+- GST and platform commission calculation checks
+- PDF validation and page-estimation heuristics
+
+## Recommended validation checklist before production
+
+1. Configure Supabase environment variables in `.env.local`.
+2. Run the SQL schema in the Supabase SQL editor.
+3. Use a valid Stripe test secret and webhook secret.
+4. Confirm the order lifecycle route accepts provider status updates.
+5. Upload a real PDF and verify page count detection matches the file.
+
+## Sandbox behavior
+
+If the required environment variables are absent, the app intentionally falls back to sandbox-safe responses to keep local development moving without crashing.
+
+This makes it easy to verify the UI and API flow before a production credential set is available.
+
+
+
+

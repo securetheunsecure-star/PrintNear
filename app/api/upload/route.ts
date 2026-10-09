@@ -1,35 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { validatePdfFile } from '@/lib/validators';
-import { estimatePageCountFromPdfText } from '@/lib/validators';
 
-export async function POST(request: NextRequest) {
+const validStatuses = new Set([
+  'PENDING_PAYMENT',
+  'PAID',
+  'ACCEPTED',
+  'PRINTING',
+  'READY_FOR_COLLECTION',
+  'COMPLETED',
+  'REJECTED',
+  'CANCELLED',
+  'REFUND_PENDING',
+  'REFUNDED',
+]);
+
+export async function PATCH(request: NextRequest, context: { params: { id: string } }) {
   try {
-    const formData = await request.formData();
-    const file = formData.get('file');
+    const { id } = context.params;
+    const body = await request.json();
+    const status = String(body.status || '').trim();
 
-    if (!(file instanceof File)) {
-      return NextResponse.json({ error: 'A PDF file is required.' }, { status: 400 });
+    if (!validStatuses.has(status)) {
+      return NextResponse.json({ ok: false, error: 'Unsupported order status' }, { status: 400 });
     }
 
-    const validation = validatePdfFile(file);
-    if (!validation.valid) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
-    }
-
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    const sampleBytes = bytes.slice(0, Math.min(bytes.length, 4096));
-    const pdfPreview = new TextDecoder('latin1').decode(sampleBytes);
-    const pageCount = estimatePageCountFromPdfText(pdfPreview);
-
-    return NextResponse.json({
-      ok: true,
-      fileName: file.name,
-      sizeBytes: file.size,
-      mimeType: file.type,
-      pageCount,
-      uploadMessage: 'PDF accepted for server-side validation.',
-    });
+    return NextResponse.json({ ok: true, orderId: id, status, message: 'Order status updated.' });
   } catch (error) {
-    return NextResponse.json({ error: 'Unable to process upload.' }, { status: 500 });
+    return NextResponse.json({ ok: false, error: 'Unable to update order.' }, { status: 500 });
   }
 }
