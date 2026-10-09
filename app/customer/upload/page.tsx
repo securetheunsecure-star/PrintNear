@@ -203,7 +203,7 @@ export default function CustomerUploadPage() {
           <aside className="card p-6">
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-slate-400">Quote</p>
             <h2 className="mt-3 text-3xl font-black text-slate-900">
-              {pageCount ? `S$${(quoteSummary.total).toFixed(2)}` : 'Ready'}
+              {pageCount ? `S$${quoteSummary.total.toFixed(2)}` : 'Ready'}
             </h2>
 
             <div className="mt-6 space-y-3 rounded-2xl bg-slate-50 p-4 text-sm text-slate-700">
