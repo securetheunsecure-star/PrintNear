@@ -1,33 +1,62 @@
-# Testing and validation
+'use client';
 
-This project ships with a lightweight Vitest suite focused on pricing and validation logic.
+import Link from 'next/link';
+import { FormEvent, useState } from 'react';
 
-## Run the suite
+export default function LoginPage() {
+  const [email, setEmail] = useState('customer@example.com');
+  const [password, setPassword] = useState('password123');
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-```bash
-npm test
-```
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
 
-## Coverage included
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-- pricing engine correctness for BW and colour jobs
-- GST and platform commission calculation checks
-- PDF validation and page-estimation heuristics
+      const result = await response.json();
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || 'Unable to log in.');
+      }
 
-## Recommended validation checklist before production
+      window.location.href = result.redirectTo || '/customer/orders';
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Unable to log in.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
-1. Configure Supabase environment variables in `.env.local`.
-2. Run the SQL schema in the Supabase SQL editor.
-3. Use a valid Stripe test secret and webhook secret.
-4. Confirm the order lifecycle route accepts provider status updates.
-5. Upload a real PDF and verify page count detection matches the file.
+  return (
+    <div className="container py-12">
+      <div className="mx-auto max-w-md card p-8">
+        <p className="text-sm font-bold uppercase tracking-[0.18em] text-brand-600">Welcome back</p>
+        <h1 className="mt-3 text-3xl font-black text-slate-900">Log in</h1>
+        <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+          <label className="block">
+            <span className="mb-2 block text-sm font-medium text-slate-700">Email</span>
+            <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 outline-none focus:border-brand-500" />
+          </label>
+          <label className="block">
+            <span className="mb-2 block text-sm font-medium text-slate-700">Password</span>
+            <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 outline-none focus:border-brand-500" />
+          </label>
 
-## Sandbox behavior
+          {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
 
-If the required environment variables are absent, the app intentionally falls back to sandbox-safe responses to keep local development moving without crashing.
-
-This makes it easy to verify the UI and API flow before a production credential set is available.
-
-
-
-
+          <button type="submit" disabled={isSubmitting} className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-brand-600 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60">
+            {isSubmitting ? 'Logging in...' : 'Log in'}
+          </button>
+        </form>
+        <p className="mt-5 text-center text-sm text-slate-600">New here? <Link href="/register" className="font-semibold text-brand-600">Create an account</Link></p>
+      </div>
+    </div>
+  );
+}

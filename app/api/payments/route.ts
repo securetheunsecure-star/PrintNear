@@ -1,52 +1,28 @@
-import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
-
-const stripe = process.env.STRIPE_SECRET_KEY
-  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-06-20',
-    })
-  : null;
-
-export async function POST(request: NextRequest) {
-  try {
-    const payload = await request.json();
-
-    if (!stripe) {
-      return NextResponse.json({
-        ok: true,
-        mode: 'test',
-        message: 'Stripe test mode is enabled. Connect live keys in a real environment.',
-        orderId: payload.orderId || 'mock-order-id',
-      });
-    }
-
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      line_items: [
-        {
-          price_data: {
-            currency: 'sgd',
-            product_data: {
-              name: 'PrintNear order',
-            },
-            unit_amount: Number(payload.amountCents ?? 0),
-          },
-          quantity: 1,
-        },
-      ],
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/customer/orders?success=1`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/customer/upload?cancel=1`,
-      metadata: {
-        orderId: String(payload.orderId || 'pending-order'),
-      },
-    });
-
-    return NextResponse.json({ ok: true, checkoutUrl: session.url });
-  } catch (error) {
-    return NextResponse.json({ error: 'Unable to start sandbox payment.' }, { status: 500 });
-  }
-}
+import { NextResponse } from 'next/server';
 
 export async function GET() {
-  return NextResponse.json({ ok: true, mode: 'sandbox', message: 'Stripe endpoint ready for test mode.' });
+  return NextResponse.json({ ok: true, mode: 'sandbox', paymentProvider: 'local-sandbox' });
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const amountCents = Number(body?.amountCents ?? 0);
+    const orderId = typeof body?.orderId === 'string' ? body.orderId : '';
+
+    if (!orderId || !Number.isFinite(amountCents) || amountCents <= 0) {
+      return NextResponse.json({ ok: false, error: 'Valid order ID and amount are required.' }, { status: 400 });
+    }
+
+    return NextResponse.json({
+      ok: true,
+      paymentId: `sandbox_${Date.now()}`,
+      status: 'PAID',
+      amountCents,
+      provider: 'local-sandbox',
+      note: 'Sandbox payment mode enabled. No external API key required.',
+    });
+  } catch (error) {
+    return NextResponse.json({ ok: false, error: error instanceof Error ? error.message : 'Unable to process payment.' }, { status: 400 });
+  }
 }
