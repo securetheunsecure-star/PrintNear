@@ -1,33 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { calculateQuote } from '@/lib/pricing';
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const pages = Number(body.pages ?? 0);
-    const copies = Number(body.copies ?? 0);
-    const color = Boolean(body.color);
-    const duplex = Boolean(body.duplex);
-
-    if (!Number.isFinite(pages) || pages <= 0 || !Number.isFinite(copies) || copies <= 0) {
-      return NextResponse.json(
-        { error: 'Invalid page count or copy count.' },
-        { status: 400 }
-      );
-    }
+    const pages = Number(body?.pages ?? 0);
+    const copies = Number(body?.copies ?? 1);
+    const color = Boolean(body?.color);
+    const duplex = Boolean(body?.duplex);
+    const providerRate = body?.providerRate ?? undefined;
 
     const quote = calculateQuote({
       pages,
       copies,
       color,
       duplex,
+      providerRate,
     });
 
-    return NextResponse.json({ quote });
+    return NextResponse.json({ ok: true, quote });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Unable to calculate quote.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ ok: false, error: error instanceof Error ? error.message : 'Unable to calculate quote.' }, { status: 400 });
   }
 }

@@ -1,30 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { validatePdfFile, estimatePageCountFromPdfText } from '@/lib/validators';
 
-const validStatuses = new Set([
-  'PENDING_PAYMENT',
-  'PAID',
-  'ACCEPTED',
-  'PRINTING',
-  'READY_FOR_COLLECTION',
-  'COMPLETED',
-  'REJECTED',
-  'CANCELLED',
-  'REFUND_PENDING',
-  'REFUNDED',
-]);
-
-export async function PATCH(request: NextRequest, context: { params: { id: string } }) {
+export async function POST(request: Request) {
   try {
-    const { id } = context.params;
-    const body = await request.json();
-    const status = String(body.status || '').trim();
+    const formData = await request.formData();
+    const file = formData.get('file');
 
-    if (!validStatuses.has(status)) {
-      return NextResponse.json({ ok: false, error: 'Unsupported order status' }, { status: 400 });
+    if (!(file instanceof File)) {
+      return NextResponse.json({ ok: false, error: 'Please attach a PDF file.' }, { status: 400 });
     }
 
-    return NextResponse.json({ ok: true, orderId: id, status, message: 'Order status updated.' });
+    const validation = validatePdfFile(file);
+    if (!validation.valid) {
+      return NextResponse.json({ ok: false, error: validation.error }, { status: 400 });
+    }
+
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const text = new TextDecoder('latin1').decode(bytes);
+    const pageCount = estimatePageCountFromPdfText(text);
+
+    return NextResponse.json({
+      ok: true,
+      fileName: file.name,
+      pageCount,
+      uploadMessage: 'PDF validated successfully. You can continue to checkout.',
+    });
   } catch (error) {
-    return NextResponse.json({ ok: false, error: 'Unable to update order.' }, { status: 500 });
+    return NextResponse.json({ ok: false, error: error instanceof Error ? error.message : 'Upload failed.' }, { status: 400 });
   }
 }
