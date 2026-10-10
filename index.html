@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="InstPrint helps customers find nearby printers and lets home printer owners earn by offering local printing services in Singapore."
+    />
+    <title>InstPrint | Print nearby. Earn from your printer.</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a href="#home" class="brand" aria-label="InstPrint home">
+          <span class="brand-mark">I</span>
+          <span>InstPrint</span>
+        </a>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="#home">Home</a>
+          <a href="#find-printer">Find a Printer</a>
+          <a href="#become-owner">Become a Printer Owner</a>
+          <a href="#orders">My Orders</a>
+          <a href="#owner-dashboard">Owner Dashboard</a>
+          <a href="#admin-demo" class="demo-link">Admin Demo</a>
+        </nav>
+        <a href="#find-printer" class="btn btn-primary nav-cta">Find a Printer</a>
+      </div>
+    </header>
+
+    <main>
+      <section id="home" class="section hero-section">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">Print nearby. Earn from your printer.</p>
+            <h1>Print nearby. Earn from your printer.</h1>
+            <p class="subtitle">
+              Find a nearby printer when you need documents, or earn extra income by
+              offering printing services from home.
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#find-printer">Find a Printer</a>
+              <button class="btn btn-secondary" id="earn-with-printer-btn" type="button">
+                Earn with Your Printer
+              </button>
+            </div>
+            <div class="mini-stats" aria-label="Key stats">
+              <div>
+                <strong>350+</strong>
+                <span>demo listings</span>
+              </div>
+              <div>
+                <strong>24h</strong>
+                <span>average turnaround</span>
+              </div>
+              <div>
+                <strong>SGD</strong>
+                <span>local pricing</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-panel card">
+            <div class="search-box">
+              <label for="home-search" class="sr-only">Postal code or location search</label>
+              <input id="home-search" type="text" placeholder="Search by postal code or area" />
+              <button type="button" class="btn btn-primary" id="home-search-btn">
+                Find a Printer
+              </button>
+            </div>
+            <div class="how-it-works">
+              <h3>How it works</h3>
+              <ol>
+                <li>Search a postal code or location.</li>
+                <li>Compare nearby printer prices and availability.</li>
+                <li>Upload a PDF and arrange collection.</li>
+              </ol>
+            </div>
+            <div class="pricing-preview">
+              <div class="price-row">
+                <span>B&amp;W</span>
+                <strong>S$0.15/page</strong>
+              </div>
+              <div class="price-row">
+                <span>Colour</span>
+                <strong>S$0.40/page</strong>
+              </div>
+              <div class="price-row">
+                <span>Service fee</span>
+                <strong>S$0.50/order</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="find-printer" class="section">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Find a printer</p>
+            <h2>Compare local printing options</h2>
+          </div>
+
+          <div class="toolbar card">
+            <div class="toolbar-item search-field">
+              <label for="printer-search">Postal code or area</label>
+              <input id="printer-search" type="text" placeholder="e.g. 238873 or Tampines" />
+            </div>
+            <div class="toolbar-item">
+              <label for="printer-type">Print type</label>
+              <select id="printer-type">
+                <option value="all">All</option>
+                <option value="bw">B&amp;W only</option>
+                <option value="colour">Colour only</option>
+              </select>
+            </div>
+            <div class="toolbar-item">
+              <label for="printer-max-price">Max price</label>
+              <select id="printer-max-price">
+                <option value="all">Any</option>
+                <option value="0.20">S$0.20</option>
+                <option value="0.30">S$0.30</option>
+                <option value="0.50">S$0.50</option>
+              </select>
+            </div>
+            <div class="toolbar-item checkbox-item">
+              <label>
+                <input id="available-only" type="checkbox" />
+                Available only
+              </label>
+            </div>
+            <div class="toolbar-item">
+              <label for="printer-sort">Sort by</label>
+              <select id="printer-sort">
+                <option value="distance">Distance</option>
+                <option value="price-low">Lowest price</option>
+                <option value="price-high">Highest price</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="printer-list" class="printer-grid" aria-live="polite"></div>
+          <div id="selected-printer-order" class="order-panel hidden" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section id="become-owner" class="section section-alt">
+        <div class="container form-layout">
+          <div class="section-heading left-aligned">
+            <p class="eyebrow">Become a printer owner</p>
+            <h2>Turn your home printer into extra income</h2>
+            <p>
+              Add a demo listing below. This saves to your browser only and is not published to
+              other users.
+            </p>
+          </div>
+
+          <form id="owner-form" class="panel-form card" novalidate>
+            <div class="form-grid">
+              <div>
+                <label for="owner-name">Display name</label>
+                <input id="owner-name" name="displayName" type="text" required />
+              </div>
+              <div>
+                <label for="owner-location">Approximate location / postal code</label>
+                <input id="owner-location" name="location" type="text" required />
+              </div>
+              <div>
+                <label for="owner-model">Printer model</label>
+                <input id="owner-model" name="printerModel" type="text" required />
+              </div>
+              <div>
+                <label for="owner-paper">Supported paper sizes</label>
+                <input id="owner-paper" name="paperSizes" type="text" placeholder="A4, A3, Letter" required />
+              </div>
+              <div>
+                <label for="owner-bw">Black-and-white price / page</label>
+                <input id="owner-bw" name="bwPrice" type="number" min="0" step="0.01" required />
+              </div>
+              <div>
+                <label for="owner-colour">Colour price / page</label>
+                <input id="owner-colour" name="colourPrice" type="number" min="0" step="0.01" required />
+              </div>
+              <div>
+                <label for="owner-duplex">Duplex support</label>
+                <select id="owner-duplex" name="duplex">
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
+              </div>
+              <div>
+                <label for="owner-availability">Weekly availability</label>
+                <input id="owner-availability" name="availability" type="text" placeholder="Weeknights, weekends" required />
+              </div>
+              <div>
+                <label for="owner-min-order">Minimum order amount</label>
+                <input id="owner-min-order" name="minimumOrder" type="number" min="0" step="0.01" required />
+              </div>
+              <div class="span-2">
+                <label for="owner-collection">Collection instructions</label>
+                <textarea id="owner-collection" name="collectionNotes" rows="3" placeholder="Optional instructions for pick-up or drop-off"></textarea>
+              </div>
+            </div>
+
+            <div class="toggle-row">
+              <label class="switch">
+                <input id="owner-active" type="checkbox" checked />
+                <span class="slider"></span>
+              </label>
+              <span>Listing is available for demo orders</span>
+            </div>
+
+            <div class="form-error" id="owner-form-error" aria-live="polite"></div>
+            <button type="submit" class="btn btn-primary">Save printer listing</button>
+            <p class="prototype-note">
+              Demo note: localStorage is browser-specific and does not publish your listing to other users or devices.
+            </p>
+          </form>
+        </div>
+      </section>
+
+      <section id="orders" class="section">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">My orders</p>
+            <h2>Demo order history</h2>
+          </div>
+          <div id="order-history" class="order-history" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section id="owner-dashboard" class="section section-alt">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Owner dashboard</p>
+            <h2>Manage your demo printer business</h2>
+          </div>
+          <div id="owner-dashboard-metrics" class="metrics-grid"></div>
+          <div class="dashboard-columns">
+            <div id="owner-listings-panel" class="panel-card card"></div>
+            <div id="owner-order-panel" class="panel-card card"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="admin-demo" class="section">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Admin demo</p>
+            <h2>Prototype marketplace dashboard</h2>
+          </div>
+          <div id="admin-metrics" class="metrics-grid"></div>
+          <div id="admin-status-summary" class="status-summary"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <h3>InstPrint</h3>
+          <p>Print nearby. Earn from your printer.</p>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#home">Privacy</a></li>
+            <li><a href="#home">Terms</a></li>
+            <li><a href="#home">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#find-printer">Find a printer</a></li>
+            <li><a href="#become-owner">Register a printer</a></li>
+            <li><a href="#orders">Order tracking</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
